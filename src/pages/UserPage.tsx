@@ -7,6 +7,15 @@ import './UserPage.css'
 
 const HAS_GOOGLE_CLIENT_ID = !!import.meta.env.VITE_GOOGLE_CLIENT_ID
 
+// 推薦食物 1/2、推薦運動 1/2：合併為「推薦 X：YY -> 功效」
+const PAIRED_DISPLAY: { key: string; effectKey: string; label: string }[] = [
+  { key: 'food1', effectKey: 'food1_effect', label: '推薦食物 1' },
+  { key: 'food2', effectKey: 'food2_effect', label: '推薦食物 2' },
+  { key: 'exercise1', effectKey: 'exercise1_effect', label: '推薦運動 1' },
+  { key: 'exercise2', effectKey: 'exercise2_effect', label: '推薦運動 2' },
+]
+const EFFECT_KEYS = new Set(PAIRED_DISPLAY.map((p) => p.effectKey))
+
 function isYouTubeUrl(str: string): boolean {
   if (!str || typeof str !== 'string') return false
   const t = str.trim()
@@ -227,16 +236,33 @@ export default function UserPage() {
                         ← 返回結果列表
                       </button>
                       <div className="result-card result-detail">
-                        {displayKeys.map((key) => (
-                          <div key={key} className="result-row">
-                            <span className="result-label">{getDisplayLabel(key)}</span>
-                            {key === 'video' ? (
-                              <VideoCell value={filtered[selectedIndex][key] ?? ''} />
-                            ) : (
-                              <span className="result-value">{filtered[selectedIndex][key] ?? '—'}</span>
-                            )}
-                          </div>
-                        ))}
+                        {displayKeys.map((key) => {
+                          if (EFFECT_KEYS.has(key)) return null
+                          const row = filtered[selectedIndex]
+                          const paired = PAIRED_DISPLAY.find((p) => p.key === key)
+                          if (paired) {
+                            const name = row[paired.key] ?? '—'
+                            const effect = row[paired.effectKey] ?? '—'
+                            return (
+                              <div key={key} className="result-row">
+                                <span className="result-label">{paired.label}</span>
+                                <span className="result-value result-value-paired">
+                                  {name} → {effect}
+                                </span>
+                              </div>
+                            )
+                          }
+                          return (
+                            <div key={key} className="result-row">
+                              <span className="result-label">{getDisplayLabel(key)}</span>
+                              {key === 'video' ? (
+                                <VideoCell value={row[key] ?? ''} />
+                              ) : (
+                                <span className="result-value">{row[key] ?? '—'}</span>
+                              )}
+                            </div>
+                          )
+                        })}
                       </div>
                     </>
                   ) : (

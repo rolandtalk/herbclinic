@@ -314,6 +314,10 @@
   word-break: break-word;
 }
 
+.result-value-paired {
+  font-weight: 500;
+}
+
 .result-value-video {
   display: flex;
   flex-direction: column;
