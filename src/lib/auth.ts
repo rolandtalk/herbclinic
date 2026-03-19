@@ -9,23 +9,35 @@ export type SessionUser = {
   exp: number
 }
 
-export function setSession(user: { email: string; name: string; picture?: string }): void {
+export type LoginSource = 'google' | 'demo'
+
+export function setSession(
+  user: { email: string; name: string; picture?: string },
+  source: LoginSource = 'google'
+): void {
   const exp = Date.now() + SESSION_DURATION_MS
   const session: SessionUser = { ...user, exp }
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(session))
-  appendLoginLog(user)
+  appendLoginLog(user, source)
 }
 
-function appendLoginLog(user: { email: string; name: string }): void {
+function appendLoginLog(user: { email: string; name: string }, source: LoginSource): void {
   try {
     const raw = localStorage.getItem(LOGIN_LOG_KEY)
-    const log: { email: string; name: string; timestamp: number }[] = raw ? JSON.parse(raw) : []
-    log.push({ email: user.email, name: user.name, timestamp: Date.now() })
+    const log: LoginRecord[] = raw ? JSON.parse(raw) : []
+    log.push({
+      email: user.email,
+      name: user.name,
+      timestamp: Date.now(),
+      source,
+    })
     localStorage.setItem(LOGIN_LOG_KEY, JSON.stringify(log))
   } catch {
     localStorage.setItem(
       LOGIN_LOG_KEY,
-      JSON.stringify([{ email: user.email, name: user.name, timestamp: Date.now() }])
+      JSON.stringify([
+        { email: user.email, name: user.name, timestamp: Date.now(), source },
+      ])
     )
   }
 }
@@ -49,7 +61,12 @@ export function clearSession(): void {
   sessionStorage.removeItem(SESSION_KEY)
 }
 
-export type LoginRecord = { email: string; name: string; timestamp: number }
+export type LoginRecord = {
+  email: string
+  name: string
+  timestamp: number
+  source?: LoginSource
+}
 
 export function getLoginLogLast7Days(): LoginRecord[] {
   try {

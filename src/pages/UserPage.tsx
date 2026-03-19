@@ -103,7 +103,7 @@ export default function UserPage() {
         })
         const profile = await res.json()
         const u = { email: profile.email, name: profile.name || profile.email, picture: profile.picture }
-        setSession(u)
+        setSession(u, 'google')
         setUser(u)
       } catch (e) {
         setError('登入失敗')
@@ -114,7 +114,7 @@ export default function UserPage() {
 
   const demoLogin = () => {
     const u = { email: 'demo@example.com', name: '示範使用者' }
-    setSession(u)
+    setSession(u, 'demo')
     setUser(u)
   }
 
