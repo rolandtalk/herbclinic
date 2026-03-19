@@ -1,0 +1,88 @@
+/* Mobile-first layout (phone screen) */
+.admin-page {
+  max-width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 0.75rem 1rem 5rem;
+  font-family: 'Noto Sans TC', 'PingFang TC', sans-serif;
+  background: #f8f9fa;
+}
+
+.admin-header {
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.admin-header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.subtitle {
+  margin: 0;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.admin-section {
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.admin-section h2 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.admin-page .table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 280px;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-table th {
+  background: #f0f4f8;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.admin-table td {
+  word-break: break-all;
+}
+
+.admin-table tbody tr:active {
+  background: #f8f9fa;
+}
+
+.admin-table .empty {
+  color: #888;
+  text-align: center;
+  padding: 1.25rem;
+  font-size: 0.9rem;
+}

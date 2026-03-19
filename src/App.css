@@ -1,0 +1,67 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #e0e4e8;
+  overflow-x: hidden;
+}
+
+/* Phone frame: max width like a mobile screen */
+.app-shell {
+  max-width: 420px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: #f8f9fa;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.06);
+}
+
+.app-main {
+  min-height: 100vh;
+  padding-bottom: 0;
+}
+
+/* Mobile: bottom tab bar */
+.app-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0.5rem 0.75rem calc(0.5rem + env(safe-area-inset-bottom));
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
+  font-family: 'Noto Sans TC', 'PingFang TC', sans-serif;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+}
+
+.app-nav a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 0.6rem 0.5rem;
+  color: #5f6368;
+  text-decoration: none;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  min-height: 44px;
+  touch-action: manipulation;
+  transition: color 0.15s, background 0.15s;
+}
+
+.app-nav a:hover {
+  color: #1a73e8;
+  background: #f0f7ff;
+}
+
+.app-nav a.active {
+  font-weight: 600;
+  color: #1a73e8;
+  background: #e8f0fe;
+}
