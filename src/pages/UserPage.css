@@ -360,6 +360,123 @@
   margin-top: 0;
 }
 
+/* 內嵌瀏覽器說明（Google OAuth 無法在此完成） */
+.in-app-notice {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #fff8e6;
+  border: 1px solid #f0c36d;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #5f4b32;
+}
+
+.in-app-notice strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: #1a1a1a;
+}
+
+.in-app-notice p {
+  margin: 0.5rem 0 0 0;
+}
+
+.in-app-notice-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.in-app-launch-btn,
+.in-app-copy-btn {
+  width: 100%;
+}
+
+.in-app-copy-hint {
+  margin: 0.5rem 0 0 0 !important;
+  font-size: 0.8rem;
+  color: #2e7d32;
+}
+
+.in-app-modal-copy-hint {
+  text-align: center;
+}
+
+.btn-external-secondary {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.in-app-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.in-app-modal {
+  max-width: 340px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.in-app-modal h2 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.05rem;
+  color: #1a1a1a;
+}
+
+.in-app-modal > p {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #444;
+}
+
+.in-app-steps {
+  margin: 0 0 1rem 1rem;
+  padding: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: #555;
+}
+
+.in-app-steps li {
+  margin-bottom: 0.5rem;
+}
+
+.btn-external {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.in-app-modal-divider {
+  text-align: center;
+  color: #888;
+  font-size: 0.85rem;
+  margin: 0.75rem 0 !important;
+}
+
+.btn-modal-close {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
 .results-section {
   padding: 0 0.25rem;
 }

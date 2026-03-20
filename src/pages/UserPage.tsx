@@ -1,8 +1,10 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useGoogleLogin } from '@react-oauth/google'
 import { fetchSheetData, getDisplayLabel, type DataRow } from '../lib/sheets'
 import { getSession, setSession, clearSession } from '../lib/auth'
 import { SEARCHABLE_COLUMNS, SEARCH_ALL_KEY } from '../lib/columnLabels'
+import { detectInAppBrowser, inAppVendorLabel, type InAppVendor } from '../lib/inAppBrowser'
+import { openUrlInExternalBrowser } from '../lib/openExternalBrowser'
 import './UserPage.css'
 
 const HAS_GOOGLE_CLIENT_ID = !!import.meta.env.VITE_GOOGLE_CLIENT_ID
@@ -75,6 +77,11 @@ export default function UserPage() {
   const [hasSearched, setHasSearched] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [inAppHelpOpen, setInAppHelpOpen] = useState(false)
+  const [copyHint, setCopyHint] = useState<string | null>(null)
+
+  const { inApp, vendor } = useMemo(() => detectInAppBrowser(), [])
+  const vendorName = inAppVendorLabel(vendor as InAppVendor)
 
   const triggerSearch = () => {
     setAppliedCol(searchCol)
@@ -95,7 +102,7 @@ export default function UserPage() {
     loadSession()
   }, [loadSession])
 
-  const login = useGoogleLogin({
+  const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
         const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
@@ -112,10 +119,19 @@ export default function UserPage() {
     onError: () => setError('登入失敗'),
   })
 
+  const handleGoogleLoginClick = () => {
+    if (inApp) {
+      setInAppHelpOpen(true)
+      return
+    }
+    googleLogin()
+  }
+
   const demoLogin = () => {
     const u = { email: 'demo@example.com', name: '示範使用者' }
     setSession(u, 'demo')
     setUser(u)
+    setInAppHelpOpen(false)
   }
 
   const logout = () => {
@@ -155,8 +171,80 @@ export default function UserPage() {
 
   const displayKeys = data[0] ? Object.keys(data[0]) : []
 
+  const pageUrl = typeof window !== 'undefined' ? window.location.href : ''
+
+  const launchSystemBrowser = useCallback(() => {
+    openUrlInExternalBrowser(pageUrl)
+  }, [pageUrl])
+
+  const copyPageUrl = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(pageUrl)
+      setCopyHint('已複製網址，請貼到 Chrome 或 Safari')
+      setTimeout(() => setCopyHint(null), 3500)
+    } catch {
+      setCopyHint('無法自動複製，請長按網址列手動複製')
+      setTimeout(() => setCopyHint(null), 3500)
+    }
+  }, [pageUrl])
+
   return (
     <div className="user-page">
+      {inApp && !user && (
+        <div className="in-app-notice" role="status">
+          <strong>內嵌瀏覽器提示</strong>
+          <p>
+            您目前使用 {vendorName} 內建瀏覽器。依 Google 安全政策，<b>無法在此環境完成 Google 登入</b>（錯誤
+            403），這一點無法由網站程式解除。
+          </p>
+          <p>請點「使用 Google 登入」查看<strong>在外部瀏覽器開啟</strong>的方式，或先使用<strong>示範登入</strong>試用查詢功能。</p>
+          <div className="in-app-notice-actions">
+            <button type="button" className="btn btn-primary in-app-launch-btn" onClick={launchSystemBrowser}>
+              用系統瀏覽器開啟本頁
+            </button>
+            <button type="button" className="btn btn-outline in-app-copy-btn" onClick={copyPageUrl}>
+              複製網址
+            </button>
+          </div>
+          {copyHint && <p className="in-app-copy-hint">{copyHint}</p>}
+        </div>
+      )}
+
+      {inAppHelpOpen && (
+        <div className="in-app-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="in-app-modal-title">
+          <div className="in-app-modal">
+            <h2 id="in-app-modal-title">在外部瀏覽器完成 Google 登入</h2>
+            <p>
+              Google 不允許在 LINE、Facebook、Instagram、微信等 App 的內建瀏覽器進行登入。請改用
+              <strong> Chrome </strong>或<strong> Safari </strong>開啟本網站。
+            </p>
+            <ol className="in-app-steps">
+              <li>
+                先試下方按鈕<strong>「用系統瀏覽器開啟本頁」</strong>（Android 上常可跳出到 Chrome）。
+              </li>
+              <li>
+                若無反應：在 {vendorName} 點右上角 <strong>⋯</strong> 或 <strong>⋮</strong>，選「在瀏覽器中開啟」等選項。
+              </li>
+              <li>或按「複製網址」，貼到 Chrome / Safari。</li>
+            </ol>
+            <button type="button" className="btn btn-primary btn-external" onClick={launchSystemBrowser}>
+              用系統瀏覽器開啟本頁
+            </button>
+            <button type="button" className="btn btn-outline btn-external-secondary" onClick={copyPageUrl}>
+              複製網址
+            </button>
+            {copyHint && <p className="in-app-copy-hint in-app-modal-copy-hint">{copyHint}</p>}
+            <p className="in-app-modal-divider">或</p>
+            <button type="button" className="btn btn-demo" onClick={demoLogin}>
+              示範登入（僅試用，非 Google 帳號）
+            </button>
+            <button type="button" className="btn btn-outline btn-modal-close" onClick={() => setInAppHelpOpen(false)}>
+              關閉
+            </button>
+          </div>
+        </div>
+      )}
+
       <header className="user-header">
         <h1>五運六氣查詢</h1>
         {user ? (
@@ -168,12 +256,12 @@ export default function UserPage() {
           </div>
         ) : (
           <div className="login-actions">
-            <button type="button" className="btn btn-primary" onClick={() => login()}>
+            <button type="button" className="btn btn-primary" onClick={handleGoogleLoginClick}>
               使用 Google 登入
             </button>
-            {!HAS_GOOGLE_CLIENT_ID && (
+            {(!HAS_GOOGLE_CLIENT_ID || inApp) && (
               <button type="button" className="btn btn-demo" onClick={demoLogin}>
-                示範登入（無 Client ID 時使用）
+                {inApp ? '示範登入（內嵌瀏覽器試用）' : '示範登入（無 Client ID 時使用）'}
               </button>
             )}
           </div>
