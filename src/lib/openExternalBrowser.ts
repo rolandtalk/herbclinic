@@ -12,6 +12,11 @@ export function isIOSDevice(): boolean {
   return false
 }
 
+export function isAndroidDevice(): boolean {
+  if (typeof navigator === 'undefined') return false
+  return /Android/i.test(navigator.userAgent || '')
+}
+
 export function openUrlInExternalBrowser(url: string): void {
   if (typeof window === 'undefined' || !url) return
 
