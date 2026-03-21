@@ -69,11 +69,26 @@ git push -u origin main
 專案內含 **Cloudflare Pages Functions**（`/functions/api/`），部署後會自動提供：
 - `GET /api/sheets` — 取得試算表 CSV
 - `GET /api/youtube-oembed` — 取得 YouTube 影片標題（參考影片）
+- `POST /api/log-login` — 將登入寫入 **KV**（全站彙總）
+- `GET /api/admin-logins?secret=…` — 管理後台讀取最近 7 天登入（密碼須與後台一致）
 
 試算表請維持「知道連結的使用者」可檢視，Production 才會正常取得資料。
+
+### 3. 登入紀錄彙總（Cloudflare KV，建議設定）
+
+管理後台要看到**所有使用者**的登入，需在 Pages 專案綁定 KV：
+
+1. Cloudflare Dashboard → **Workers & Pages** → **KV** → **Create a namespace**（例如名稱 `herbclinic-login-log`）。
+2. 開啟你的 **Pages 專案** → **Settings** → **Functions** → **KV namespace bindings** → **Add binding**：
+   - **Variable name**：`LOGIN_LOG`（必須與程式一致）
+   - **KV namespace**：選上一步建立的 namespace
+3. （選用）**Settings** → **Variables and secrets** 新增 **`ADMIN_LOG_SECRET`**（Production），值與管理後台密碼相同；若不設定，後端預設與程式內建後台密碼相同（僅供測試，正式環境請自訂密碼並同步設定）。
+4. **重新部署**一次 Pages。
+
+本機 `npm run dev` 仍只會寫入 `localStorage`；正式網址上登入會同時 `POST /api/log-login` 寫入 KV。
 
 ## 技術
 
 - **前端**：Vite + React + TypeScript、React Router、@react-oauth/google
 - **資料**：Google 試算表經 `/api/sheets`（開發時 Vite proxy，Production 為 Cloudflare Pages Function）
-- **登入紀錄**：`sessionStorage`（目前登入）、`localStorage`（7 天登入 log，供管理後台）
+- **登入紀錄**：`sessionStorage`（目前登入）；**Production** 另寫 **Cloudflare KV**（全站）；本機與 KV 失敗時管理後台退回 `localStorage`

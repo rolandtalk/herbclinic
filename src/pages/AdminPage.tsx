@@ -29,16 +29,47 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [logins, setLogins] = useState<LoginRecord[]>([])
   const [counts, setCounts] = useState<{ email: string; name: string; count: number }[]>([])
+  const [kvStatus, setKvStatus] = useState<'loading' | 'ok' | 'fallback'>('loading')
 
   useEffect(() => {
     setAuthenticated(checkAdminAuth())
   }, [])
 
   useEffect(() => {
-    if (authenticated) {
-      const records = getLoginLogLast7Days()
-      setLogins(records)
-      setCounts(getLoginCountByUser(records))
+    if (!authenticated) return
+
+    let cancelled = false
+    async function load() {
+      setKvStatus('loading')
+      try {
+        const res = await fetch(
+          `/api/admin-logins?secret=${encodeURIComponent(ADMIN_PASSWORD)}`,
+          { cache: 'no-store' }
+        )
+        if (res.ok) {
+          const data = (await res.json()) as unknown
+          if (Array.isArray(data)) {
+            if (!cancelled) {
+              setLogins(data as LoginRecord[])
+              setCounts(getLoginCountByUser(data as LoginRecord[]))
+              setKvStatus('ok')
+            }
+            return
+          }
+        }
+      } catch {
+        /* use local fallback */
+      }
+      if (!cancelled) {
+        const records = getLoginLogLast7Days()
+        setLogins(records)
+        setCounts(getLoginCountByUser(records))
+        setKvStatus('fallback')
+      }
+    }
+    load()
+    return () => {
+      cancelled = true
     }
   }, [authenticated])
 
@@ -95,7 +126,12 @@ export default function AdminPage() {
     <div className="admin-page">
       <header className="admin-header">
         <h1>管理後台 — 登入紀錄</h1>
-        <p className="subtitle">最近 7 天登入紀錄與每人登入次數（含已註冊／未註冊用戶）</p>
+        <p className="subtitle">
+          最近 7 天登入紀錄與每人登入次數（含已註冊／未註冊用戶）
+          {kvStatus === 'ok' && ' — 資料來源：Cloudflare KV（全站彙總）'}
+          {kvStatus === 'fallback' && ' — 目前顯示本機快取（KV 未設定或無法連線）'}
+          {kvStatus === 'loading' && ' — 載入中…'}
+        </p>
       </header>
 
       <section className="admin-section">

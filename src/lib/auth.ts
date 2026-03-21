@@ -21,25 +21,40 @@ export function setSession(
   appendLoginLog(user, source)
 }
 
+function pushLoginToKv(user: { email: string; name: string }, source: LoginSource, timestamp: number): void {
+  if (import.meta.env.DEV) return
+  const body = JSON.stringify({
+    email: user.email,
+    name: user.name,
+    source,
+    timestamp,
+  })
+  fetch('/api/log-login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body,
+  }).catch(() => {})
+}
+
 function appendLoginLog(user: { email: string; name: string }, source: LoginSource): void {
+  const timestamp = Date.now()
   try {
     const raw = localStorage.getItem(LOGIN_LOG_KEY)
     const log: LoginRecord[] = raw ? JSON.parse(raw) : []
     log.push({
       email: user.email,
       name: user.name,
-      timestamp: Date.now(),
+      timestamp,
       source,
     })
     localStorage.setItem(LOGIN_LOG_KEY, JSON.stringify(log))
   } catch {
     localStorage.setItem(
       LOGIN_LOG_KEY,
-      JSON.stringify([
-        { email: user.email, name: user.name, timestamp: Date.now(), source },
-      ])
+      JSON.stringify([{ email: user.email, name: user.name, timestamp, source }])
     )
   }
+  pushLoginToKv(user, source, timestamp)
 }
 
 export function getSession(): SessionUser | null {

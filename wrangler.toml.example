@@ -1,0 +1,16 @@
+# 僅供本機 `wrangler pages dev` 或 CLI 部署參考。
+# Cloudflare Pages 多數在 Dashboard 綁定 KV 即可，不必提交此檔。
+#
+# 1. Dashboard → Workers & Pages → KV → Create namespace → 取名如 herbclinic-login-log
+# 2. Pages 專案 → Settings → Functions → KV namespace bindings
+#    Variable name: LOGIN_LOG
+#    KV namespace: （選剛建立的）
+# 3. （選用）Environment variables → ADMIN_LOG_SECRET（須與管理後台密碼一致，預設可省略則後端用 fang0925）
+
+name = "herbclinic"
+compatibility_date = "2024-09-23"
+pages_build_output_dir = "dist"
+
+[[kv_namespaces]]
+binding = "LOGIN_LOG"
+id = "paste-your-kv-namespace-id-here"
