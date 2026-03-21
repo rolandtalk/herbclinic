@@ -360,40 +360,6 @@
   margin-top: 0;
 }
 
-/* 內嵌瀏覽器說明（Google OAuth 無法在此完成） */
-.in-app-notice {
-  margin-bottom: 1rem;
-  padding: 1rem;
-  background: #fff8e6;
-  border: 1px solid #f0c36d;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: #5f4b32;
-}
-
-.in-app-notice strong {
-  display: block;
-  margin-bottom: 0.35rem;
-  color: #1a1a1a;
-}
-
-.in-app-notice p {
-  margin: 0.5rem 0 0 0;
-}
-
-.in-app-notice-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-
-.in-app-launch-btn,
-.in-app-copy-btn {
-  width: 100%;
-}
-
 .in-app-copy-hint {
   margin: 0.5rem 0 0 0 !important;
   font-size: 0.8rem;
@@ -421,13 +387,6 @@
 
 .ios-safari-fallback-modal {
   margin-bottom: 0.75rem;
-}
-
-.ios-safari-title {
-  margin: 0 0 0.35rem 0;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #1a1a1a;
 }
 
 .ios-safari-link {
@@ -500,13 +459,6 @@
   text-align: center;
   text-decoration: none;
   box-sizing: border-box;
-}
-
-.in-app-modal-divider {
-  text-align: center;
-  color: #888;
-  font-size: 0.85rem;
-  margin: 0.75rem 0 !important;
 }
 
 .btn-modal-close {

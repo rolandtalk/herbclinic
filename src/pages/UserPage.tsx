@@ -3,7 +3,7 @@ import { useGoogleLogin } from '@react-oauth/google'
 import { fetchSheetData, getDisplayLabel, type DataRow } from '../lib/sheets'
 import { getSession, setSession, clearSession } from '../lib/auth'
 import { SEARCHABLE_COLUMNS, SEARCH_ALL_KEY } from '../lib/columnLabels'
-import { detectInAppBrowser, inAppVendorLabel, type InAppVendor } from '../lib/inAppBrowser'
+import { detectInAppBrowser } from '../lib/inAppBrowser'
 import { openUrlInExternalBrowser, isIOSDevice } from '../lib/openExternalBrowser'
 import './UserPage.css'
 
@@ -80,8 +80,7 @@ export default function UserPage() {
   const [inAppHelpOpen, setInAppHelpOpen] = useState(false)
   const [copyHint, setCopyHint] = useState<string | null>(null)
 
-  const { inApp, vendor } = useMemo(() => detectInAppBrowser(), [])
-  const vendorName = inAppVendorLabel(vendor as InAppVendor)
+  const { inApp } = useMemo(() => detectInAppBrowser(), [])
   const ios = useMemo(() => isIOSDevice(), [])
 
   const triggerSearch = () => {
@@ -191,37 +190,6 @@ export default function UserPage() {
 
   return (
     <div className="user-page">
-      {inApp && !user && (
-        <div className="in-app-notice" role="status">
-          <strong>內嵌瀏覽器提示</strong>
-          <p>
-            您目前使用 {vendorName} 內建瀏覽器。依 Google 安全政策，<b>無法在此環境完成 Google 登入</b>（錯誤
-            403），這一點無法由網站程式解除。
-          </p>
-          <p>請點「使用 Google 登入」查看<strong>在外部瀏覽器開啟</strong>的方式，或先使用<strong>示範登入</strong>試用查詢功能。</p>
-          <div className="in-app-notice-actions">
-            <button type="button" className="btn btn-primary in-app-launch-btn" onClick={launchSystemBrowser}>
-              用系統瀏覽器開啟本頁
-            </button>
-            <button type="button" className="btn btn-outline in-app-copy-btn" onClick={copyPageUrl}>
-              複製網址
-            </button>
-          </div>
-          {copyHint && <p className="in-app-copy-hint">{copyHint}</p>}
-          {ios && (
-            <div className="ios-safari-fallback">
-              <p className="ios-safari-title">iPhone / iPad（含 LINE）建議：</p>
-              <a href={pageUrl} className="ios-safari-link" target="_blank" rel="noopener noreferrer">
-                {pageUrl}
-              </a>
-              <p className="ios-safari-hint">
-                <strong>長按</strong>上方藍色連結 → 選「在 Safari 開啟」或「Open in Safari」。若無選單，請用右上角 <strong>⋯</strong> →「在瀏覽器開啟」。
-              </p>
-            </div>
-          )}
-        </div>
-      )}
-
       {inAppHelpOpen && (
         <div className="in-app-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="in-app-modal-title">
           <div className="in-app-modal">
@@ -254,10 +222,6 @@ export default function UserPage() {
               複製網址
             </button>
             {copyHint && <p className="in-app-copy-hint in-app-modal-copy-hint">{copyHint}</p>}
-            <p className="in-app-modal-divider">或</p>
-            <button type="button" className="btn btn-demo" onClick={demoLogin}>
-              示範登入（僅試用，非 Google 帳號）
-            </button>
             <button type="button" className="btn btn-outline btn-modal-close" onClick={() => setInAppHelpOpen(false)}>
               關閉
             </button>
@@ -279,9 +243,9 @@ export default function UserPage() {
             <button type="button" className="btn btn-primary" onClick={handleGoogleLoginClick}>
               使用 Google 登入
             </button>
-            {(!HAS_GOOGLE_CLIENT_ID || inApp) && (
+            {!HAS_GOOGLE_CLIENT_ID && (
               <button type="button" className="btn btn-demo" onClick={demoLogin}>
-                {inApp ? '示範登入（內嵌瀏覽器試用）' : '示範登入（無 Client ID 時使用）'}
+                示範登入（無 Client ID 時使用）
               </button>
             )}
           </div>
