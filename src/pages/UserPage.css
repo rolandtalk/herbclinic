@@ -410,6 +410,43 @@
   margin-top: 0.5rem;
 }
 
+/* iOS / LINE：長按連結 → 在 Safari 開啟 */
+.ios-safari-fallback {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #e8f4fd;
+  border: 1px solid #a8c7fa;
+  border-radius: 8px;
+}
+
+.ios-safari-fallback-modal {
+  margin-bottom: 0.75rem;
+}
+
+.ios-safari-title {
+  margin: 0 0 0.35rem 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.ios-safari-link {
+  display: block;
+  word-break: break-all;
+  font-size: 0.8rem;
+  color: #1a73e8;
+  text-decoration: underline;
+  line-height: 1.4;
+  padding: 0.35rem 0;
+}
+
+.ios-safari-hint {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #444;
+}
+
 .in-app-modal-overlay {
   position: fixed;
   inset: 0;

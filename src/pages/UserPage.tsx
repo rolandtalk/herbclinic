@@ -4,7 +4,7 @@ import { fetchSheetData, getDisplayLabel, type DataRow } from '../lib/sheets'
 import { getSession, setSession, clearSession } from '../lib/auth'
 import { SEARCHABLE_COLUMNS, SEARCH_ALL_KEY } from '../lib/columnLabels'
 import { detectInAppBrowser, inAppVendorLabel, type InAppVendor } from '../lib/inAppBrowser'
-import { openUrlInExternalBrowser } from '../lib/openExternalBrowser'
+import { openUrlInExternalBrowser, isIOSDevice } from '../lib/openExternalBrowser'
 import './UserPage.css'
 
 const HAS_GOOGLE_CLIENT_ID = !!import.meta.env.VITE_GOOGLE_CLIENT_ID
@@ -82,6 +82,7 @@ export default function UserPage() {
 
   const { inApp, vendor } = useMemo(() => detectInAppBrowser(), [])
   const vendorName = inAppVendorLabel(vendor as InAppVendor)
+  const ios = useMemo(() => isIOSDevice(), [])
 
   const triggerSearch = () => {
     setAppliedCol(searchCol)
@@ -207,6 +208,17 @@ export default function UserPage() {
             </button>
           </div>
           {copyHint && <p className="in-app-copy-hint">{copyHint}</p>}
+          {ios && (
+            <div className="ios-safari-fallback">
+              <p className="ios-safari-title">iPhone / iPad（含 LINE）建議：</p>
+              <a href={pageUrl} className="ios-safari-link" target="_blank" rel="noopener noreferrer">
+                {pageUrl}
+              </a>
+              <p className="ios-safari-hint">
+                <strong>長按</strong>上方藍色連結 → 選「在 Safari 開啟」或「Open in Safari」。若無選單，請用右上角 <strong>⋯</strong> →「在瀏覽器開啟」。
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -220,13 +232,21 @@ export default function UserPage() {
             </p>
             <ol className="in-app-steps">
               <li>
-                先試下方按鈕<strong>「用系統瀏覽器開啟本頁」</strong>（Android 上常可跳出到 Chrome）。
+                <strong>iOS / LINE：</strong>按鈕可能被內建瀏覽器擋下。請<strong>長按下方藍色網址</strong>→「在 Safari 開啟」；或 LINE 右上角 <strong>⋯</strong>→「在瀏覽器開啟」。
               </li>
               <li>
-                若無反應：在 {vendorName} 點右上角 <strong>⋯</strong> 或 <strong>⋮</strong>，選「在瀏覽器中開啟」等選項。
+                <strong>Android：</strong>先試「用系統瀏覽器開啟本頁」（常可跳出 Chrome）。
               </li>
-              <li>或按「複製網址」，貼到 Chrome / Safari。</li>
+              <li>或按「複製網址」，貼到 Safari / Chrome。</li>
             </ol>
+            {ios && pageUrl && (
+              <div className="ios-safari-fallback ios-safari-fallback-modal">
+                <a href={pageUrl} className="ios-safari-link" target="_blank" rel="noopener noreferrer">
+                  {pageUrl}
+                </a>
+                <p className="ios-safari-hint">↑ 長按連結，選「在 Safari 開啟」</p>
+              </div>
+            )}
             <button type="button" className="btn btn-primary btn-external" onClick={launchSystemBrowser}>
               用系統瀏覽器開啟本頁
             </button>
