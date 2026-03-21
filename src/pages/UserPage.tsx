@@ -4,7 +4,7 @@ import { fetchSheetData, getDisplayLabel, type DataRow } from '../lib/sheets'
 import { getSession, setSession, clearSession } from '../lib/auth'
 import { SEARCHABLE_COLUMNS, SEARCH_ALL_KEY } from '../lib/columnLabels'
 import { detectInAppBrowser } from '../lib/inAppBrowser'
-import { openUrlInExternalBrowser, isIOSDevice } from '../lib/openExternalBrowser'
+import { isIOSDevice } from '../lib/openExternalBrowser'
 import './UserPage.css'
 
 const HAS_GOOGLE_CLIENT_ID = !!import.meta.env.VITE_GOOGLE_CLIENT_ID
@@ -173,10 +173,6 @@ export default function UserPage() {
 
   const pageUrl = typeof window !== 'undefined' ? window.location.href : ''
 
-  const launchSystemBrowser = useCallback(() => {
-    openUrlInExternalBrowser(pageUrl)
-  }, [pageUrl])
-
   const copyPageUrl = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(pageUrl)
@@ -203,7 +199,7 @@ export default function UserPage() {
                 <strong>iOS / LINE：</strong>按鈕可能被內建瀏覽器擋下。請<strong>長按下方藍色網址</strong>→「在 Safari 開啟」；或 LINE 右上角 <strong>⋯</strong>→「在瀏覽器開啟」。
               </li>
               <li>
-                <strong>Android：</strong>先試「用系統瀏覽器開啟本頁」（常可跳出 Chrome）。
+                <strong>Android：</strong>使用 App 右上角選單「在瀏覽器開啟」，或按「複製網址」貼到 Chrome。
               </li>
               <li>或按「複製網址」，貼到 Safari / Chrome。</li>
             </ol>
@@ -215,9 +211,6 @@ export default function UserPage() {
                 <p className="ios-safari-hint">↑ 長按連結，選「在 Safari 開啟」</p>
               </div>
             )}
-            <button type="button" className="btn btn-primary btn-external" onClick={launchSystemBrowser}>
-              用系統瀏覽器開啟本頁
-            </button>
             <button type="button" className="btn btn-outline btn-external-secondary" onClick={copyPageUrl}>
               複製網址
             </button>
